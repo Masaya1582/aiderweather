@@ -31,11 +31,17 @@ struct ContentView: View {
                 }
                 .tag(2)
             
+            CalendarWeatherView(viewModel: viewModel)
+                .tabItem {
+                    Label("カレンダー", systemImage: "calendar.circle.fill")
+                }
+                .tag(3)
+            
             SettingsView()
                 .tabItem {
                     Label("設定", systemImage: "gear")
                 }
-                .tag(3)
+                .tag(4)
         }
     }
 }

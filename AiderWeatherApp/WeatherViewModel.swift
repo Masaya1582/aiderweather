@@ -111,6 +111,36 @@ class WeatherViewModel: ObservableObject {
         }
     }
     
+    // カレンダー表示用のデータ（日付ごとにグループ化）
+    var calendarWeatherData: [Date: (temp: Double, icon: String, description: String)] {
+        var result: [Date: (temp: Double, icon: String, description: String)] = [:]
+        let calendar = Calendar.current
+        
+        for item in forecastItems {
+            let date = Date(timeIntervalSince1970: TimeInterval(item.dt))
+            let dayStart = calendar.startOfDay(for: date)
+            
+            // 既に同じ日付のデータがある場合は、温度の平均を取るか、最初のものを保持
+            if result[dayStart] == nil {
+                let iconCode = item.weather.first?.icon ?? ""
+                result[dayStart] = (
+                    temp: item.main.temp,
+                    icon: weatherIcon(from: iconCode),
+                    description: item.weather.first?.description ?? ""
+                )
+            }
+        }
+        return result
+    }
+    
+    // 日付フォーマット用のヘルパーメソッド
+    func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d日"
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter.string(from: date)
+    }
+    
     private func handleError(_ error: Error) {
         if let weatherError = error as? WeatherError {
             switch weatherError {
