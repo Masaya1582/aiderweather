@@ -9,6 +9,33 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = WeatherViewModel()
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            CurrentWeatherView(viewModel: viewModel)
+                .tabItem {
+                    Label("現在", systemImage: "sun.max.fill")
+                }
+                .tag(0)
+            
+            ForecastView(viewModel: viewModel)
+                .tabItem {
+                    Label("予報", systemImage: "calendar")
+                }
+                .tag(1)
+            
+            SettingsView()
+                .tabItem {
+                    Label("設定", systemImage: "gear")
+                }
+                .tag(2)
+        }
+    }
+}
+
+struct CurrentWeatherView: View {
+    @ObservedObject var viewModel: WeatherViewModel
     @State private var cityInput = "Tokyo"
     @FocusState private var isInputFocused: Bool
     
@@ -195,6 +222,7 @@ struct ContentView: View {
                 // 初期表示時に東京の天気を取得
                 Task {
                     await viewModel.fetchWeather(for: cityInput)
+                    await viewModel.fetchForecast(for: cityInput)
                 }
             }
         }

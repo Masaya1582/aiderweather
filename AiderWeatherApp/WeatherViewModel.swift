@@ -12,8 +12,10 @@ import Combine
 @MainActor
 class WeatherViewModel: ObservableObject {
     @Published var weatherData: WeatherDisplayData = .placeholder
+    @Published var forecastItems: [ForecastItem] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var selectedCity: String = "Tokyo"
     
     private let weatherService = WeatherService.shared
     
@@ -36,6 +38,29 @@ class WeatherViewModel: ObservableObject {
         }
         
         isLoading = false
+    }
+    
+    func fetchForecast(for city: String = "Tokyo") async {
+        // APIキーが設定されているか確認
+        if !weatherService.hasAPIKey() {
+            return
+        }
+        
+        do {
+            let response = try await weatherService.fetchForecast(cityName: city)
+            forecastItems = response.list
+        } catch {
+            // エラーは無視するか、必要に応じて処理
+            print("Forecast error: \(error)")
+        }
+    }
+    
+    func updateCity(_ city: String) {
+        selectedCity = city
+        Task {
+            await fetchWeather(for: city)
+            await fetchForecast(for: city)
+        }
     }
     
     private func updateWeatherData(from response: CurrentWeatherResponse) {
