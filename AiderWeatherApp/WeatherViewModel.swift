@@ -37,6 +37,9 @@ class WeatherViewModel: ObservableObject {
             handleError(error)
         }
         
+        // 天気予報も同時に取得
+        await fetchForecast(for: city)
+        
         isLoading = false
     }
     
@@ -50,8 +53,11 @@ class WeatherViewModel: ObservableObject {
             let response = try await weatherService.fetchForecast(cityName: city)
             forecastItems = response.list
         } catch {
-            // エラーは無視するか、必要に応じて処理
+            // エラー時はforecastItemsを空にしてエラーメッセージを設定
+            forecastItems = []
             print("Forecast error: \(error)")
+            // 必要に応じてエラーメッセージを設定
+            errorMessage = "天気予報の取得に失敗しました: \(error.localizedDescription)"
         }
     }
     
