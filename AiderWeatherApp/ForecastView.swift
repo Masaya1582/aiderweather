@@ -8,8 +8,6 @@ struct ForecastView: View {
             ForEach(viewModel.forecastItems.prefix(10), id: \.dt) { item in
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(formatDate(item.dtTxt))
-                            .font(.headline)
                         Text(item.weather.first?.description ?? "")
                             .font(.subheadline)
                             .foregroundColor(.secondary)

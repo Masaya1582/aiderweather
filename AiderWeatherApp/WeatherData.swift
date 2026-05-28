@@ -38,11 +38,9 @@ struct ForecastItem: Codable {
     let visibility: Int?
     let pop: Double
     let rain: Rain?
-    let dtTxt: String
-    
+
     enum CodingKeys: String, CodingKey {
         case dt, main, weather, clouds, wind, visibility, pop, rain
-        case dtTxt = "dt_txt"
     }
 }
 
