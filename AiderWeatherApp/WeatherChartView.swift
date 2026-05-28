@@ -485,27 +485,52 @@ struct DataCard: View {
 
 // MARK: - 詳細データシート
 struct DetailDataSheet: View {
+    @Environment(\.dismiss) var dismiss
     let dataPoint: WeatherChartDataPoint
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // ヘッダー
+                    // ヘッダーカード
                     VStack(spacing: 10) {
                         Text(dataPoint.time, format: .dateTime.weekday().day().month().hour())
                             .font(.title2)
                             .fontWeight(.semibold)
-                        Image(systemName: dataPoint.icon)
-                            .font(.system(size: 60))
-                            .foregroundColor(.blue)
-                        Text(dataPoint.weatherDescription)
-                            .font(.title3)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
+                        
+                        // 天気アイコンと説明
+                        HStack(spacing: 15) {
+                            Image(systemName: dataPoint.icon)
+                                .font(.system(size: 60))
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.blue, .cyan],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .shadow(color: .blue.opacity(0.3), radius: 5)
+                            
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(dataPoint.weatherDescription)
+                                    .font(.title3)
+                                    .fontWeight(.medium)
+                                Text("詳細気象データ")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color(.systemBackground))
+                                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+                        )
                     }
                     .padding()
                     
-                    // データグリッド
+                    // データグリッド - モダンなカードデザイン
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                         DetailItem(title: "気温", value: "\(Int(dataPoint.temperature))°C", icon: "thermometer", color: .red)
                         DetailItem(title: "体感温度", value: "\(Int(dataPoint.feelsLike))°C", icon: "thermometer.medium", color: .orange)
@@ -517,18 +542,80 @@ struct DetailDataSheet: View {
                         DetailItem(title: "降水確率", value: "\(Int(dataPoint.precipitation))%", icon: "cloud.rain", color: .indigo)
                     }
                     .padding()
+                    
+                    // 追加統計情報
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("統計情報")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal)
+                        
+                        HStack(spacing: 15) {
+                            StatCardMini(title: "熱指数", value: "\(calculateHeatIndex(temp: dataPoint.temperature, humidity: dataPoint.humidity))°C", icon: "thermometer.high", color: .red)
+                            StatCardMini(title: "体感差", value: "\(Int(abs(dataPoint.temperature - dataPoint.feelsLike)))°C", icon: "arrow.left.arrow.right", color: .orange)
+                            StatCardMini(title: "風速比", value: String(format: "%.1f", dataPoint.windGust / max(dataPoint.windSpeed, 0.1)), icon: "wind.circle", color: .cyan)
+                        }
+                        .padding(.horizontal)
+                    }
                 }
+                .padding(.bottom, 30)
             }
-            .navigationTitle("詳細データ")
+            .navigationTitle("詳細気象データ")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("完了") {
-                        // シートを閉じる
+                    Button(action: { dismiss() }) {
+                        Text("完了")
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
                     }
                 }
             }
+            .background(
+                LinearGradient(
+                    colors: [Color(.systemBackground), Color(.systemGray6)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
         }
+    }
+    
+    private func calculateHeatIndex(temp: Double, humidity: Int) -> Int {
+        // 簡易的な熱指数計算
+        let t = temp
+        let rh = Double(humidity)
+        let heatIndex = 0.5 * (t + 61.0 + ((t - 68.0) * 1.2) + (rh * 0.094))
+        return Int(heatIndex)
+    }
+}
+
+struct StatCardMini: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(color)
+            Text(value)
+                .font(.headline)
+                .fontWeight(.bold)
+            Text(title)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.05), radius: 5, y: 3)
+        )
     }
 }
 
