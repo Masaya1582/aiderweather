@@ -80,7 +80,7 @@ class WeatherViewModel: ObservableObject {
         )
     }
     
-    private func weatherIcon(from iconCode: String) -> String {
+    func weatherIcon(from iconCode: String) -> String {
         // OpenWeatherのアイコンコードをSF Symbolにマッピング
         switch iconCode {
         case "01d": return "sun.max.fill"
@@ -92,6 +92,22 @@ class WeatherViewModel: ObservableObject {
         case "13d", "13n": return "snow"
         case "50d", "50n": return "cloud.fog.fill"
         default: return "questionmark.circle"
+        }
+    }
+    
+    // チャート用に加工したデータ
+    var chartData: [WeatherChartDataPoint] {
+        // 最初の24時間分の予報データを使用（3時間間隔なので8点）
+        let forecastItemsToUse = Array(forecastItems.prefix(8))
+        
+        return forecastItemsToUse.map { item in
+            WeatherChartDataPoint(
+                time: Date(timeIntervalSince1970: TimeInterval(item.dt)),
+                temperature: item.main.temp,
+                humidity: item.main.humidity,
+                weatherDescription: item.weather.first?.description ?? "",
+                icon: weatherIcon(from: item.weather.first?.icon ?? "")
+            )
         }
     }
     
