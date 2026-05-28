@@ -67,16 +67,16 @@ class WeatherViewModel: ObservableObject {
         if let weatherError = error as? WeatherError {
             switch weatherError {
             case .invalidURL:
-                errorMessage = "無効なURLです"
+                errorMessage = "無効なURLです。APIエンドポイントを確認してください。"
             case .invalidResponse:
-                errorMessage = "サーバーからの応答が無効です"
+                errorMessage = "サーバーからの応答が無効です。ステータスコードを確認してください。"
             case .invalidData:
-                errorMessage = "データの解析に失敗しました"
+                errorMessage = "データの解析に失敗しました。APIレスポンス形式が変更された可能性があります。"
             case .networkError(let underlyingError):
-                errorMessage = "ネットワークエラー: \(underlyingError.localizedDescription)"
+                errorMessage = "ネットワークエラー: \(underlyingError.localizedDescription)\nインターネット接続を確認してください。"
             }
         } else {
-            errorMessage = "エラーが発生しました: \(error.localizedDescription)"
+            errorMessage = "予期せぬエラーが発生しました: \(error.localizedDescription)"
         }
         
         // エラー時はプレースホルダーデータを表示

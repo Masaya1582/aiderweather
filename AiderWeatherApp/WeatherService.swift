@@ -28,10 +28,14 @@ class WeatherService {
         // 環境変数からAPIキーを読み込む試み
         if let key = ProcessInfo.processInfo.environment["OPENWEATHER_API_KEY"] {
             self.apiKey = key
+            print("OpenWeather APIキーを環境変数から読み込みました")
         } else {
             // 開発用: Info.plistから読み込むことも可能
             // 実際のアプリではより安全な方法で管理してください
             print("警告: OpenWeather APIキーが設定されていません")
+            print("設定方法:")
+            print("1. 環境変数 OPENWEATHER_API_KEY を設定する")
+            print("2. WeatherService.shared.setAPIKey(\"your_key\") を呼び出す")
         }
     }
     
