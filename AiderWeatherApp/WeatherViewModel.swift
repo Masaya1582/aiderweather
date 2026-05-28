@@ -20,6 +20,13 @@ class WeatherViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        // APIキーが設定されているか確認
+        if !weatherService.hasAPIKey() {
+            errorMessage = "OpenWeather APIキーが設定されていません。\nWeatherService.swiftのapiKeyを設定してください。"
+            isLoading = false
+            return
+        }
+        
         do {
             let response = try await weatherService.fetchCurrentWeather(cityName: city)
             updateWeatherData(from: response)

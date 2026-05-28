@@ -103,14 +103,23 @@ struct ContentView: View {
                     }
                     
                     if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.red.opacity(0.1))
-                            )
-                            .padding()
+                        VStack(spacing: 10) {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                            
+                            if errorMessage.contains("APIキー") {
+                                Link("OpenWeather APIキーを取得", destination: URL(string: "https://openweathermap.org/api")!)
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.red.opacity(0.1))
+                        )
+                        .padding()
                     }
                     
                     Spacer()

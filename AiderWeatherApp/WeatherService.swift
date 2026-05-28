@@ -15,22 +15,32 @@ enum WeatherError: Error {
 }
 
 class WeatherService {
-    private let apiKey: String
+    private var apiKey: String
     private let baseURL = "https://api.openweathermap.org/data/2.5"
     
     // シングルトンインスタンス
     static let shared = WeatherService()
     
     private init() {
-        // APIキーを設定（実際のプロジェクトでは環境変数などから取得）
-        // 注意: 実際のアプリでは安全な方法でAPIキーを管理してください
-        self.apiKey = "YOUR_API_KEY_HERE" // 後で実際のキーに置き換える
+        // 初期値は空文字列
+        self.apiKey = ""
+        
+        // 環境変数からAPIキーを読み込む試み
+        if let key = ProcessInfo.processInfo.environment["OPENWEATHER_API_KEY"] {
+            self.apiKey = key
+        } else {
+            // 開発用: Info.plistから読み込むことも可能
+            // 実際のアプリではより安全な方法で管理してください
+            print("警告: OpenWeather APIキーが設定されていません")
+        }
     }
     
     func setAPIKey(_ key: String) {
-        // 実行時にAPIキーを設定するためのメソッド
-        // この実装では簡略化のためプロパティを変更可能にします
-        // 実際のアプリではより安全な方法を検討してください
+        self.apiKey = key
+    }
+    
+    func hasAPIKey() -> Bool {
+        return !apiKey.isEmpty
     }
     
     // 現在の天気を取得
