@@ -52,7 +52,7 @@ struct ContentView: View {
                                 
                                 Button(action: {
                                     Task {
-                                        await fetchWeather()
+                                        viewModel.updateCity(cityInput)
                                     }
                                 }) {
                                     Image(systemName: "magnifyingglass")
