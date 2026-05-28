@@ -661,6 +661,37 @@ struct WeatherChartDataPoint: Identifiable {
     let precipitation: Double
     let weatherDescription: String
     let icon: String
+    
+    // 簡易イニシャライザ（互換性のため）
+    init(time: Date, temperature: Double, humidity: Int, weatherDescription: String, icon: String) {
+        self.time = time
+        self.temperature = temperature
+        self.humidity = humidity
+        self.weatherDescription = weatherDescription
+        self.icon = icon
+        // デフォルト値
+        self.feelsLike = temperature
+        self.pressure = 1013
+        self.windSpeed = 0.0
+        self.windGust = 0.0
+        self.cloudiness = 0
+        self.precipitation = 0.0
+    }
+    
+    // 完全イニシャライザ
+    init(time: Date, temperature: Double, feelsLike: Double, humidity: Int, pressure: Int, windSpeed: Double, windGust: Double, cloudiness: Int, precipitation: Double, weatherDescription: String, icon: String) {
+        self.time = time
+        self.temperature = temperature
+        self.feelsLike = feelsLike
+        self.humidity = humidity
+        self.pressure = pressure
+        self.windSpeed = windSpeed
+        self.windGust = windGust
+        self.cloudiness = cloudiness
+        self.precipitation = precipitation
+        self.weatherDescription = weatherDescription
+        self.icon = icon
+    }
 }
 
 #Preview {
